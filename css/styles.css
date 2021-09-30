@@ -1,0 +1,28 @@
+label,
+input,
+button {
+  margin: 4px;
+}
+.mr {
+  margin-top: 45px !important;
+}
+ul {
+  list-style-type: none;
+}
+.checkbox {
+  height: 16px;
+  width: 16px;
+}
+
+input {
+  display: inline !important;
+  width: 20% !important;
+}
+
+li {
+  margin: 16px;
+}
+.mr-2 {
+  margin-left: 8px;
+  margin-right: 8px;
+}

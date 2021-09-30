@@ -1,0 +1,42 @@
+<html>
+  <head>
+    <title>Todo App</title>
+    <link
+      rel="stylesheet"
+      href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css"
+      integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T"
+      crossorigin="anonymous"
+    />
+    <link
+      rel="stylesheet"
+      href="css/styles.css"
+      type="text/css"
+      media="screen"
+      charset="utf-8"
+    />
+  </head>
+  <body>
+    <div class="container mr">
+      <div class="card text-center">
+        <div class="card-body">
+          <h5 class="badge badge-info card-title">To-DO Application</h5>
+        </div>
+        <p>
+          <label class="label label-primary" for="new-task">Add Item</label
+          ><input id="new-task" type="text" /><button id="btn-add">Add</button>
+        </p>
+        <div class="alert alert-primary mr-2" role="alert">
+          <h5 class="card-title badge badge-primary">Incomplete</h5>
+          <ul id="incomplete-tasks" class="list-group"></ul>
+        </div>
+
+        <div class="alert alert-success mr-2" role="alert">
+          <h5 class="card-title badge badge-success">Completed</h5>
+          <ul id="completed-tasks" class="list-group"></ul>
+        </div>
+      </div>
+    </div>
+
+    <script type="text/javascript" src="js/todo.js"></script>
+  </body>
+</html>

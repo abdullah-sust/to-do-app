@@ -21,13 +21,16 @@
         <div class="card-body">
           <h5 class="badge badge-info card-title">To-DO Application</h5>
         </div>
-        <p>
+        <p class="add-item">
           <label class="label label-primary" for="new-task">Add Item</label
           ><input id="new-task" type="text" /><button id="btn-add">Add</button>
         </p>
+        <p class="search-section">
+          <input id="search-box" placeholder="Search ..." type="text" />
+        </p>
         <div class="alert alert-primary mr-2" role="alert">
           <h5 class="card-title badge badge-primary">Incomplete</h5>
-          <ul id="incomplete-tasks" class="list-group"></ul>
+          <ul id="incomplete-tasks" class="list-group flex"></ul>
         </div>
 
         <div class="alert alert-success mr-2" role="alert">

@@ -12,11 +12,14 @@ var setLocalStorageData = (data) => {
 var totalTasks;
 var taskInput = document.getElementById("new-task"); //Add a new task.
 var addButton = document.getElementById("btn-add"); //Add button
+var searchInput = document.getElementById("search-box"); //Add a new task.
+
 var incompleteTaskHolder = document.getElementById("incomplete-tasks"); //ul of #incomplete-tasks
 var completedTasksHolder = document.getElementById("completed-tasks"); //ul of #completed-tasks
 
 addButton.className = "btn btn-success";
 taskInput.className = "input-group flex-nowrap form-control";
+searchInput.className = "input-group flex-nowrap form-control";
 
 //Create new task list item
 var createNewTaskElement = function (task) {
@@ -33,13 +36,13 @@ var createNewTaskElement = function (task) {
   listItem.id = task.id;
 
   // adding class name
-  listItem.className = "list-group-item";
+  listItem.className = "custom-li list-group-item";
   checkbox.className = "checkbox " + task.id + " ";
-  label.className = "label";
-  editInput.className = "input-group flex-nowrap form-control";
-  editBtn.className = "btn btn-primary";
-  updateBtn.className = "btn btn-success";
-  deleteBtn.className = "btn btn-danger";
+  label.className = "task-label";
+  editInput.className = "input-group form-control edit-input";
+  editBtn.className = "btn btn-primary edit-btn";
+  updateBtn.className = "btn btn-success update-btn";
+  deleteBtn.className = "btn btn-danger delete-btn";
 
   // adding element type
   checkbox.type = "checkbox";
@@ -98,7 +101,6 @@ var createNewTaskElement = function (task) {
     element.childNodes[2].setAttribute("hidden", true);
     element.childNodes[3].setAttribute("hidden", true);
     element.childNodes[4].removeAttribute("hidden");
-    // console.log(element);
   });
 
   // onclick update event handling
@@ -122,7 +124,7 @@ var createNewTaskElement = function (task) {
     setLocalStorageData(data);
   });
 
-  deleteBtn.addEventListener("click", (event) => {
+  var deleteTask = (event) => {
     var target = event.target;
     var element = target.parentNode;
     var id = element.id;
@@ -137,8 +139,14 @@ var createNewTaskElement = function (task) {
     });
     data.splice(data.indexOf(selectedItem), 1);
     setLocalStorageData(data);
-  });
+  }
 
+  deleteBtn.addEventListener("click", (event) => {
+    var isDelete = confirm("Do you want to delete this task?");
+    if (isDelete) {
+      deleteTask(event);
+    }
+  });
   return listItem;
 };
 
@@ -166,22 +174,56 @@ var addTask = function () {
 
 addButton.addEventListener("click", addTask);
 
-// Get all tasks API
-var getTaskItems = function () {
-  var tasks = getLocalStorageData();
-  if (tasks === null) {
-    alert("Please add task!");
+// Generating both complete and incomplete tasks
+var generateElements = (tasks) => {
+  tasks.forEach((task) => {
+    var element = createNewTaskElement(task);
+    if (task.is_finish) {
+      completedTasksHolder.appendChild(element);
+    } else {
+      incompleteTaskHolder.appendChild(element);
+    }
+  });
+}
+
+// Get all tasks API on the basis of task type
+var getTaskItems = function (type, tasks) {
+  completedTasksHolder.innerHTML = '';
+  incompleteTaskHolder.innerHTML = '';
+  if (type === 'all') {
+    if (tasks === null) {
+      alert("Please add task!");
+    } else {
+      generateElements(tasks);
+    }
   } else {
-    tasks.forEach((task) => {
-      var element = createNewTaskElement(task);
-      if (task.is_finish) {
-        completedTasksHolder.appendChild(element);
-      } else {
-        incompleteTaskHolder.appendChild(element);
-      }
-    });
+    generateElements(tasks);
   }
 };
 
 // Calling get all tasks API
-getTaskItems();
+getTaskItems('all', getLocalStorageData());
+
+// Search on all tasks
+var searchTask = (event) => {
+  var element = event.target;
+  var value = element.value;
+
+  if ( value.length > 2) {
+    var data = getLocalStorageData();
+    var newTaskArray = [];
+    data.forEach(task => {
+      if (task.value === value) {
+        newTaskArray.push(task);
+      }
+    });
+    if (newTaskArray.length > 0) {
+      getTaskItems('filtered', newTaskArray);
+    }
+  } else {
+    getTaskItems('all', getLocalStorageData());
+  }
+}
+
+// Search input box event handler
+searchInput.addEventListener("keyup", searchTask);

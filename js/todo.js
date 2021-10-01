@@ -71,6 +71,7 @@ var createNewTaskElement = function (task) {
   listItem.appendChild(editBtn);
   listItem.appendChild(updateBtn);
   listItem.appendChild(deleteBtn);
+  listItem.setAttribute('draggable', true);
 
   // onclick checkbox event handling
   checkbox.addEventListener("click", (event) => {
@@ -139,14 +140,62 @@ var createNewTaskElement = function (task) {
     });
     data.splice(data.indexOf(selectedItem), 1);
     setLocalStorageData(data);
-  }
+  };
 
+  //  Delete confirm alert 
   deleteBtn.addEventListener("click", (event) => {
     var isDelete = confirm("Do you want to delete this task?");
     if (isDelete) {
       deleteTask(event);
     }
   });
+
+  var selectedElement = null;
+  var selectedElementId = null;
+  var selectedParentId = null;
+
+  function allowDrop(event) {
+    event.preventDefault();
+  }
+
+  var updateLocalStorageDataAfterDragDrop = (is_finish) => {
+    var tasks = getLocalStorageData();
+    tasks.forEach((task) => {
+      if ( task.id.toString() === selectedElementId.toString()) {
+        task.is_finish = is_finish;
+      }
+    });
+    setLocalStorageData(tasks);
+  };
+
+  completedTasksHolder.addEventListener("drop", (event) => {
+    selectedElement.remove();
+    selectedElement.childNodes[0].checked = true;
+    document.getElementById('completed-tasks').prepend(selectedElement);
+    updateLocalStorageDataAfterDragDrop(true);
+  });
+
+  completedTasksHolder.addEventListener("dragover", (event) => {
+    allowDrop(event);
+  });
+
+  incompleteTaskHolder.addEventListener("drop", (event) => {
+    selectedElement.remove();
+    selectedElement.childNodes[0].checked = false;
+    document.getElementById('incomplete-tasks').prepend(selectedElement);
+    updateLocalStorageDataAfterDragDrop(false);
+  });
+
+  incompleteTaskHolder.addEventListener("dragover", (event) => {
+    allowDrop(event);
+  });
+
+  listItem.addEventListener("dragstart", (event) => {
+    selectedElementId = event.target.id
+    selectedParentId = event.target.parentNode.id
+    selectedElement = document.getElementById(selectedElementId);
+  });
+
   return listItem;
 };
 
@@ -164,7 +213,7 @@ var addTask = function () {
     ++totalTasks;
     data.push(task);
     var newItem = createNewTaskElement(task);
-    incompleteTaskHolder.appendChild(newItem);
+    incompleteTaskHolder.prepend(newItem);
     setLocalStorageData(data);
     taskInput.value = "";
   } else {
@@ -172,6 +221,16 @@ var addTask = function () {
   }
 };
 
+//
+taskInput.addEventListener("keyup", function (event) {
+  if (event.keyCode === 13) {
+    console.log(event.keyCode);
+    event.preventDefault();
+    addButton.click();
+  }
+});
+
+// Event handler for new task item
 addButton.addEventListener("click", addTask);
 
 // Generating both complete and incomplete tasks
@@ -184,13 +243,13 @@ var generateElements = (tasks) => {
       incompleteTaskHolder.appendChild(element);
     }
   });
-}
+};
 
 // Get all tasks API on the basis of task type
 var getTaskItems = function (type, tasks) {
-  completedTasksHolder.innerHTML = '';
-  incompleteTaskHolder.innerHTML = '';
-  if (type === 'all') {
+  completedTasksHolder.innerHTML = "";
+  incompleteTaskHolder.innerHTML = "";
+  if (type === "all") {
     if (tasks === null) {
       alert("Please add task!");
     } else {
@@ -202,28 +261,28 @@ var getTaskItems = function (type, tasks) {
 };
 
 // Calling get all tasks API
-getTaskItems('all', getLocalStorageData());
+getTaskItems("all", getLocalStorageData());
 
 // Search on all tasks
 var searchTask = (event) => {
   var element = event.target;
   var value = element.value;
 
-  if ( value.length > 2) {
+  if (value.length > 2) {
     var data = getLocalStorageData();
     var newTaskArray = [];
-    data.forEach(task => {
+    data.forEach((task) => {
       if (task.value === value) {
         newTaskArray.push(task);
       }
     });
     if (newTaskArray.length > 0) {
-      getTaskItems('filtered', newTaskArray);
+      getTaskItems("filtered", newTaskArray);
     }
   } else {
-    getTaskItems('all', getLocalStorageData());
+    getTaskItems("all", getLocalStorageData());
   }
-}
+};
 
 // Search input box event handler
 searchInput.addEventListener("keyup", searchTask);
